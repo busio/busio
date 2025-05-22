@@ -1,9 +1,9 @@
 """Entry point for the scanned notices parser."""
 
 import argparse
-import os
+import logging
 
-from .letter_splitter import split_letters
+from .letter_splitter import analyze_pdf, split_letters
 
 
 def parse_notices(input_path: str, output_dir: str) -> None:
@@ -22,7 +22,27 @@ def main() -> None:
         help="Directory where individual letters will be written",
         default="output",
     )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debug messages",
+    )
+    parser.add_argument(
+        "--analyze",
+        action="store_true",
+        help="Output OCR text for each page and exit",
+    )
     args = parser.parse_args()
+
+    logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO, format="%(message)s")
+
+    # Silence extremely verbose logs from pdfminer and friends
+    for noisy in ["pdfminer", "pdfminer.pdfparser", "pdfminer.pdfinterp", "pdfminer.pdftypes", "PyPDF2"]:
+        logging.getLogger(noisy).setLevel(logging.WARNING)
+
+    if args.analyze:
+        analyze_pdf(args.path)
+        return
 
     parse_notices(args.path, args.output)
 
