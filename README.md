@@ -20,6 +20,7 @@ python -m src.main merged_notices.pdf output_dir
 ```
 
 Use `--debug` to see additional processing information on the console. The
+
 `--analyze` flag prints the OCR text of each page without writing any output
 files.
 
