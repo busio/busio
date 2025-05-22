@@ -52,6 +52,14 @@ def _parse_info(text: str) -> Tuple[str, str, str]:
     return date_str, name, notice
 
 
+def _is_new_letter(text: str) -> bool:
+    """Return True if the text indicates the start of a new letter."""
+    return (
+        re.search(r"Internal Revenue Service", text, re.I)
+        and re.search(r"\bDear\b", text)
+    )
+
+
 def split_letters(input_pdf: str, output_dir: str) -> List[str]:
     """Split the input PDF into per-taxpayer letters.
 
@@ -79,8 +87,8 @@ def split_letters(input_pdf: str, output_dir: str) -> List[str]:
                 writer.add_page(reader.pages[idx])
                 continue
 
-            # new letter heuristic: look for greeting and IRS header
-            if re.search(r"\bDear\b", text) and re.search(r"Internal Revenue Service", text, re.I):
+            # detect the start of a new letter
+            if _is_new_letter(text):
                 # save previous letter
                 date_str, name, notice = info
                 filename = f"{date_str} {name} - {notice}.pdf"
