@@ -75,7 +75,7 @@ def split_letters(input_pdf: str, output_dir: str) -> List[str]:
                 info = _parse_info(text)
             writer.add_page(reader.pages[idx])
 
-        if writer.getNumPages() > 0 and info:
+        if len(writer.pages) > 0 and info:
             date_str, name, notice = info
             filename = f"{date_str} {name} - {notice}.pdf"
             out_path = os.path.join(output_dir, filename)
