@@ -10,7 +10,10 @@ from PyPDF2 import PdfReader, PdfWriter
 
 
 def _extract_text(page: pdfplumber.page.Page) -> str:
-    """OCR the given page and return extracted text."""
+    """Return text from the given page using embedded text if available, otherwise OCR."""
+    text = page.extract_text() or ""
+    if text.strip():
+        return text
     img = page.to_image(resolution=300)
     pil_img: Image.Image = img.original
     return pytesseract.image_to_string(pil_img)
@@ -18,19 +21,26 @@ def _extract_text(page: pdfplumber.page.Page) -> str:
 
 def _parse_info(text: str) -> Tuple[str, str, str]:
     """Extract date, taxpayer name and notice name from page text."""
-    # Date formats like MM/DD/YY or Month DD, YYYY
-    date_match = re.search(r"(\d{1,2}/\d{1,2}/\d{2,4})", text)
+    # Date formats like MM/DD/YY or "Month DD, YYYY"
     date_str = "000000"
+    date_match = re.search(r"(\d{1,2}/\d{1,2}/\d{2,4})", text)
+    if not date_match:
+        date_match = re.search(
+            r"((January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4})",
+            text,
+        )
     if date_match:
-        for fmt in ("%m/%d/%Y", "%m/%d/%y"):
+        for fmt in ("%m/%d/%Y", "%m/%d/%y", "%B %d, %Y"):
             try:
                 dt = datetime.strptime(date_match.group(1), fmt)
                 date_str = dt.strftime("%y%m%d")
                 break
             except ValueError:
                 continue
-    name_match = re.search(r"Dear\s+([A-Z][A-Za-z ,.'-]+)", text)
+
+    name_match = re.search(r"Dear\s+([^\n,:]+)", text)
     name = name_match.group(1).strip().replace(",", "") if name_match else "Unknown"
+
     notice_match = re.search(r"(CP\d+|Letter\s*\d+|Notice\s+[A-Z0-9]+)", text, re.I)
     notice = notice_match.group(1).replace(" ", "") if notice_match else "IRSNotice"
     return date_str, name, notice
