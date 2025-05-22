@@ -14,8 +14,13 @@ This project aims to provide tools for parsing scanned notice documents from PDF
 
 Run the main script with the path to the merged PDF containing multiple IRS letters. The script will OCR each page, analyze the text, and split the PDF into individual letters named using the date, taxpayer name, and notice type.
 
+
 ```bash
 python -m src.main merged_notices.pdf output_dir
 ```
+
+Use `--debug` to see additional processing information on the console. The
+`--analyze` flag prints the OCR text of each page without writing any output
+files.
 
 Each resulting file will be named in the format `YYMMDD Taxpayer Name - IRSNOTICE.pdf`.
