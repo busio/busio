@@ -12,10 +12,10 @@ This project aims to provide tools for parsing scanned notice documents from PDF
 
 ## Usage
 
-Run the main script with the path to a file or directory containing the notices:
+Run the main script with the path to the merged PDF containing multiple IRS letters. The script will OCR each page, analyze the text, and split the PDF into individual letters named using the date, taxpayer name, and notice type.
 
 ```bash
-python -m src.main /path/to/notices
+python -m src.main merged_notices.pdf output_dir
 ```
 
-The current implementation prints the provided path. Future versions will parse the documents with `pytesseract` and `pdfplumber`.
+Each resulting file will be named in the format `YYMMDD Taxpayer Name - IRSNOTICE.pdf`.
