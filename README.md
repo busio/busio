@@ -19,7 +19,9 @@ Run the main script with the path to the merged PDF containing multiple IRS lett
 python -m src.main merged_notices.pdf output_dir
 ```
 
-Use `--debug` to see additional processing information on the console. The
+Use `--debug` to see additional processing information on the console. Only
+messages from this tool are shown; noisy library logs are suppressed. The
+
 `--analyze` flag prints the OCR text of each page without writing any output
 files.
 
