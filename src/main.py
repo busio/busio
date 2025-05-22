@@ -36,10 +36,6 @@ def main() -> None:
 
     logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO, format="%(message)s")
 
-    # Silence extremely verbose logs from pdfminer and friends
-    for noisy in ["pdfminer", "pdfminer.pdfparser", "pdfminer.pdfinterp", "pdfminer.pdftypes", "PyPDF2"]:
-        logging.getLogger(noisy).setLevel(logging.WARNING)
-
     if args.analyze:
         analyze_pdf(args.path)
         return
